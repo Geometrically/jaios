@@ -1,10 +1,5 @@
-zig build-exe \
-  --name application.elf \
-  -target arm-freestanding-eabi \
-  -mcpu=arm1176jzf_s \
-  --script memory.ld \
-  src/start.S src/main.zig
+## JaiOS
 
-$ arm-none-eabi-objcopy -O binary application.elf application.bin
+This is a Zig-based operation system for Raspberry Pi Zero W. Made for CS140E!
 
-$ arm-none-eabi-objdump -d application.elf > application.list
+- `zig build pi` to build and upload to the pi.
