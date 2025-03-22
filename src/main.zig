@@ -1,6 +1,7 @@
 const util = @import("util.zig");
-const gpio = @import("gpio.zig");
 const uart = @import("uart.zig");
+const fmt = @import("fmt.zig");
+const builtin = @import("builtin");
 
 pub extern var __code_start__: *align(4) u32;
 pub extern var __code_end__: *align(4) u32;
@@ -15,7 +16,8 @@ pub extern var __prog_end__: *align(4) u32;
 pub extern var __heap_start__: *align(4) u32;
 
 pub export fn notmain() void {
-    uart.puts("Hello World\n");
+    const example = @import("examples/interrupts.zig");
+    example.run_example();
 }
 
 pub export fn _cstart() void {
@@ -28,7 +30,6 @@ pub export fn _cstart() void {
         ptr.* = 0;
     }
 
-    
     uart.init();
 
     util.cycle_cnt_init();
@@ -36,4 +37,13 @@ pub export fn _cstart() void {
     notmain();
 
     util.clean_reboot();
+}
+
+const std = @import("std");
+
+pub fn panic(msg: []const u8, stack_trace: ?*std.builtin.StackTrace, ret_addr: ?usize) noreturn {
+    const panic_addr = if (ret_addr) |addr| addr else @returnAddress();
+    fmt.printfln("PANIC {}: {} {}", .{ panic_addr, msg, stack_trace });
+    util.clean_reboot();
+    unreachable;
 }

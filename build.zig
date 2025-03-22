@@ -12,6 +12,9 @@ pub fn build(b: *std.Build) void {
     });
 
     // Standard optimization options
+    // const optimize = b.standardOptimizeOption(.{
+    //     .preferred_optimize_mode = .ReleaseSmall,
+    // });
     const optimize = b.standardOptimizeOption(.{});
 
     // Create the ELF executable
@@ -25,6 +28,8 @@ pub fn build(b: *std.Build) void {
     // Add the assembly file
     exe.addAssemblyFile(b.path("src/mem-barrier.S"));
     exe.addAssemblyFile(b.path("src/start.S"));
+    exe.addAssemblyFile(b.path("src/interrupts/interrupts.S"));
+    exe.addAssemblyFile(b.path("src/interrupts/syscalls.S"));
 
     // Add linker script
     exe.setLinkerScriptPath(b.path("memory.ld"));
@@ -58,7 +63,7 @@ pub fn build(b: *std.Build) void {
 
     // // Install to Pi
     const pi_cmd = b.addSystemCommand(&.{
-        "./bin/pi-install",
+        "./bin/my-install",
         b.getInstallPath(.bin, "application.bin"),
     });
     pi_cmd.step.dependOn(&bin_cmd.step);

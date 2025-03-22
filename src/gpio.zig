@@ -70,5 +70,6 @@ pub fn set_input(pin: u32) void {
 pub fn read(pin: u32) i32 {
     const addr = gpio_lev0 + (((pin % 32) / 32) * 4);
     const pin_level = util.get32(@ptrFromInt(addr));
-    return @intCast((pin_level >> pin) & 1);
+    const shift_amount: u5 = @intCast(pin);
+    return @intCast((pin_level >> shift_amount) & 1);
 }

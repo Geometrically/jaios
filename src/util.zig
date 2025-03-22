@@ -1,4 +1,6 @@
 const uart = @import("uart.zig");
+const timer = @import("timer.zig");
+const interrupt = @import("interrupts/interrupt.zig");
 
 const STACK_ADDR = 0x8000000;
 const STACK_ADDR2 = 0x7000000;
@@ -8,23 +10,6 @@ const INT_STACK_ADDR2 = 0xA000000;
 
 const FREE_MB = 0x6000000;
 const HIGHEST_USED_ADDR = INT_STACK_ADDR;
-
-const CYC_PER_USEC = 700;
-const PI_MHz = 700 * 1000 * 1000;
-
-inline fn cycles_to_nanosec(c: u64) u64 {
-    return (c * 142857) / 100000;
-}
-
-inline fn usec_to_cycles(usec: u64) u64 {
-    return usec * CYC_PER_USEC;
-}
-
-pub fn delay_ms(ms: u32) void {
-    const delay_cycles = usec_to_cycles(ms * 1000);
-    var i: u32 = 0;
-    while (i < delay_cycles) : (i += 1) {}
-}
 
 pub fn put32(addr: *volatile u32, value: u32) void {
     addr.* = value;
@@ -43,7 +28,7 @@ pub export fn at_user_level() bool {
 }
 
 pub export fn rpi_reboot() void {
-    delay_ms(1);
+    timer.delay_ms(10);
 
     if (at_user_level()) {
         uart.puts("Switching to supervisor mode...\n");
@@ -63,8 +48,8 @@ pub export fn rpi_reboot() void {
 
 pub export fn clean_reboot() void {
     uart.puts("DONE!!!\n");
+    timer.delay_ms(10);
     uart.flush_tx();
-    delay_ms(1);
     rpi_reboot();
 }
 
@@ -81,3 +66,7 @@ pub inline fn cycle_cnt_init() void {
 pub extern fn dev_barrier() void;
 pub extern fn dmb() void;
 pub extern fn dsb() void;
+
+pub fn panic(s: []const u8) void {
+    @panic(s);
+}
