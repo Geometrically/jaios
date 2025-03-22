@@ -30,6 +30,7 @@ pub fn build(b: *std.Build) void {
     exe.addAssemblyFile(b.path("src/start.S"));
     exe.addAssemblyFile(b.path("src/interrupts/interrupts.S"));
     exe.addAssemblyFile(b.path("src/interrupts/syscalls.S"));
+    // exe.addAssemblyFile(b.path("src/threads/thread-asm.S"));
 
     // Add linker script
     exe.setLinkerScriptPath(b.path("memory.ld"));

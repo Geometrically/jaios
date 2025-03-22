@@ -34,7 +34,7 @@ pub export fn rpi_reboot() void {
         uart.puts("Switching to supervisor mode...\n");
         _switch_to_user();
     }
-
+    
     const PM_RSTC = 0x2010001c;
     const PM_WDOG = 0x20100024;
     const PM_PASSWORD = 0x5a000000;
